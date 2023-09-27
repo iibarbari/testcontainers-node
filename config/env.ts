@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 type Env = {
     port: number;
     mongoUrl: string;
+    tokenSecret: string;
 }
 
 dotenv.config();
@@ -17,9 +18,15 @@ if (!process.env.MONGO_URL) {
     process.exit(1);
 }
 
+if (!process.env.TOKEN_SECRET) {
+    console.log('❌ TOKEN_SECRET must be defined!');
+    process.exit(1);
+}
+
 const config: Env = {
     port: Number(process.env.PORT),
     mongoUrl: process.env.MONGO_URL,
+    tokenSecret: process.env.TOKEN_SECRET,
 }
 
 export default config;

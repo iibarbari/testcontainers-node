@@ -1,4 +1,4 @@
-import Book, {IBook, IBookDocument} from "../models/book";
+import Book, {IBook, IBookDocument} from "../../models/book";
 
 export async function getBooks(): Promise<Array<IBookDocument>> {
     try {
@@ -26,7 +26,7 @@ export async function createBook(book: IBook): Promise<IBookDocument> {
     }
 }
 
-export async function updateBook(id: string, book: IBook): Promise<IBookDocument | null> {
+export async function updateBook(id: IBookDocument["_id"], book: Partial<IBook>): Promise<IBookDocument | null> {
     try {
         return await Book.findByIdAndUpdate(id, book);
     } catch (error) {
@@ -34,7 +34,7 @@ export async function updateBook(id: string, book: IBook): Promise<IBookDocument
     }
 }
 
-export async function deleteBook(id: string): Promise<IBookDocument | null> {
+export async function deleteBook(id: IBookDocument["_id"]): Promise<IBookDocument | null> {
     try {
         return await Book.findByIdAndRemove(id);
     } catch (error) {

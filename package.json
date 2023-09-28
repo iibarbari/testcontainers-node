@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node --test --require ts-node/register --loader tsx services/**/*.test.ts",
     "build": "npx tsc",
-    "start": "nodemon index.ts",
+    "start": "nodemon --exec ts-node index.ts",
     "dev": "concurrently \"npm run start\" \"npm run start\""
   },
   "keywords": [],

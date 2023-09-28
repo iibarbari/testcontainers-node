@@ -17,10 +17,20 @@ export async function clearDatabase(container: StartedTestContainer) {
         await collection.deleteMany({})
     }
 }
+
 export function getUri(container: StartedTestContainer) {
     return `mongodb://${container.getHost()}:${container.getMappedPort(27017)}`
 }
 
 export async function createContainer() {
-    return await new GenericContainer("mongo").withExposedPorts(27017).start()
+    return await new GenericContainer("mongo")
+        .withExposedPorts(27017)
+        .withEnvironment({
+            PORT: "3000",
+            MONGO_INITDB_ROOT_USERNAME: "",
+            MONGO_INITDB_ROOT_PASSWORD: "",
+            MONGO_URL: "",
+            TOKEN_SECRET: ""
+        })
+        .start()
 }

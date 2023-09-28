@@ -30,7 +30,13 @@ router.post("/sign-up", async (req: Request<any, any, IUser>, res) => {
 
         res.json(user);
     } catch (error) {
-        res.status(500).json(error);
+        if (error instanceof Error) {
+            res.status(500).json({message: error.message});
+
+            return;
+        }
+
+        res.status(500).json("Something went wrong");
     }
 });
 

@@ -3,29 +3,33 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
-    "test": "node --loader tsx test/**.test.ts",
+    "test": "node --test --require ts-node/register --loader tsx controllers/**/**/*.test.ts",
     "build": "npx tsc",
     "start": "nodemon --exec ts-node index.ts",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npm run start\" \"npm run start\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.1.0",
     "mongoose": "^7.5.3"
   },
   "devDependencies": {
     "@testcontainers/mongodb": "^10.2.1",
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.18",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "^20.7.0",
     "concurrently": "^8.2.1",
-    "glob": "^10.3.10",
     "nodemon": "^3.0.1",
     "testcontainers": "^10.2.1",
+    "ts-node": "^10.9.1",
     "tsx": "^3.13.0",
     "typescript": "^5.2.2"
   }

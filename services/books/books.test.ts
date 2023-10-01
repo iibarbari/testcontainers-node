@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import test from "node:test";
 import {StartedTestContainer} from "testcontainers";
-import {closeDatabase, createContainer, getUri} from "./index";
+import {closeDatabase, createContainer, getUri} from "../../config/test";
 import assert from "node:assert";
-import {createBook, deleteBook, getBooks, updateBook} from "../services/books";
-import {IBook, IBookDocument} from "../models/book";
+import {createBook, deleteBook, getBooks, updateBook} from "./index";
+import {IBook, IBookDocument} from "../../models/book";
 
 test("book service", async (context) => {
     let container: StartedTestContainer;
@@ -46,7 +46,7 @@ test("book service", async (context) => {
     });
 
     await context.test("book can be updated", async () => {
-        const updatedBook: IBook = {
+        const updatedBook: Partial<IBook> = {
             name: "The Lord of the Rings: The Fellowship of the Ring",
         }
 

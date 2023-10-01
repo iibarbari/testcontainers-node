@@ -32,18 +32,27 @@ services:
       - app
   api:
     build:
-        context: .
-        dockerfile: Dockerfile
+      context: .
+#      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT}
     container_name: api
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     restart: always
     ports:
-      - "3000:3000"
+      - 3000:${PORT}
     depends_on:
       - mongo
     env_file:
       - .env
     networks:
       - app
+    command:
+      - pnpm
+      - run
+      - dev
 networks:
   app:
     name: app

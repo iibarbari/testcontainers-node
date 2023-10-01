@@ -1,15 +1,14 @@
 import test from "node:test";
-import {closeDatabase, createContainer, getUri} from "../../config/test";
-import mongoose from "mongoose";
 import {StartedTestContainer} from "testcontainers";
-import {IUser, IUserDocument} from "../../models/user";
-import {createUser, login} from "./index";
+import {closeDatabase, createContainer, getUri} from "../../../config/test";
+import mongoose from "mongoose";
 import assert from "node:assert";
-import bcrypt from "bcrypt";
+import login from "./index";
+import {IUserDocument, IUserLogin} from "../../../@types/user";
 
-test("auth service", async (context) => {
+test("auth controller login", async (context) => {
     let container: StartedTestContainer;
-    let testUser: Omit<IUser, "password"> & { token: string };
+    let testUser: IUserDocument;
 
     context.before(async () => {
         try {
@@ -27,36 +26,8 @@ test("auth service", async (context) => {
         await closeDatabase(container);
     });
 
-    await context.test("user can sign up", async () => {
-        const user: IUser = {
-            email: "ilknur@me.me",
-            name: "ilknur",
-            password: "123456",
-        };
-
-        testUser = await createUser(user);
-
-        assert.strictEqual(testUser.email, user.email);
-        assert.strictEqual(testUser.name, user.name);
-        assert.strictEqual(testUser.token.length > 0, true);
-    });
-
-    await context.test("user cannot signup with the same email", async () => {
-        const user: IUser = {
-            email: "ilknur@me.me",
-            name: "ilknur",
-            password: "123456",
-        };
-
-        await assert.rejects(async () => {
-            await createUser(user);
-        }, {
-            message: "User already exists"
-        });
-    });
-
     await context.test("user can login", async () => {
-        const user: Omit<IUser, "name"> = {
+        const user: IUserLogin = {
             email: "ilknur@me.me",
             password: "123456",
         };
@@ -65,11 +36,15 @@ test("auth service", async (context) => {
 
         assert.strictEqual(res.email, testUser.email);
         assert.strictEqual(res.name, testUser.name);
+        assert.strictEqual(res.isEmailVerified, false);
+        assert.notEqual(res.token, null);
+        // @ts-ignore
+        assert.strictEqual(res?.password, undefined)
     });
 
 
     await context.test("user cannot login with wrong password", async () => {
-        const user: Omit<IUser, "name"> = {
+        const user: IUserLogin = {
             email: "ilknur@me.me",
             password: "wrongpassword"
         };
@@ -77,12 +52,12 @@ test("auth service", async (context) => {
         await assert.rejects(async () => {
             await login(user);
         }, {
-            message: "Wrong password"
+            message: "Password is incorrect"
         })
     });
 
     await context.test("user cannot login with unregistered email", async () => {
-        const user: Omit<IUser, "name"> = {
+        const user: IUserLogin = {
             email: "ilknur@not.me",
             password: "123456"
         };

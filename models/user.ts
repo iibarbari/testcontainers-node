@@ -1,31 +1,49 @@
 import mongoose, {Model} from "mongoose";
+import {IMetaDocument, IMetaUser} from "../@types/user";
+import {MongoError} from "mongodb";
 
-export interface IUser {
-    name: string;
-    password: string;
-    email: string;
-}
-
-export interface IUserDocument extends IUser, mongoose.Document {}
-
-const schema = new mongoose.Schema<IUser, Model<IUserDocument>>({
+const schema = new mongoose.Schema<IMetaUser, Model<IMetaDocument>>({
     name: {
         type: String,
-        required: true,
+        required: [true, "Name is required"],
+        unique: true,
     },
     password: {
         type: String,
-        required: true,
+        required: [true, "Password is required"],
+        select: false,
     },
     email: {
         type: String,
-        required: true,
+        required: [true, "Email is required"],
         unique: true,
+        validate: {
+            validator: function (email: string) {
+                const emailRegex = /\S+@\S+\.\S+/;
+
+                return emailRegex.test(email);
+            }
+        }
     },
+    token: {
+        type: String || null,
+        default: null,
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
+    }
 }, {
     timestamps: true
 });
+schema.post("save", function (error: any, doc: IMetaDocument, next: Function) {
+    if (error instanceof MongoError && error.code === 11000) {
+        next(new Error("Email already exists"));
+    }
 
-const User = mongoose.model<IUser, Model<IUserDocument>>('User', schema);
+    next(error);
+})
+
+const User = mongoose.model<IMetaUser, Model<IMetaDocument>>('User', schema);
 
 export default User;
